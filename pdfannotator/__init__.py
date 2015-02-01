@@ -36,17 +36,18 @@ class PdfPageItem(QtGui.QGraphicsItem):
         d = option.levelOfDetailFromTransform(painter.worldTransform())
         d = min(d, 8)
         r = self.boundingRect()
-        top = math.floor(r.top()*d)
-        left = math.floor(r.left()*d)
-        bottom = math.ceil(r.bottom()*d)
-        right = math.ceil(r.right()*d)
+        top = math.floor(r.top() * d)
+        left = math.floor(r.left() * d)
+        bottom = math.ceil(r.bottom() * d)
+        right = math.ceil(r.right() * d)
 
-        if (top,left,right,bottom) != self.cachedRect:
+        if (top, left, right, bottom) != self.cachedRect:
             self.image = self.page.renderToImage(
-                75*d, 75*d, left, top, right-left, bottom-top)
-            self.cachedRect = (top,left,right,bottom)
+                75 * d, 75 * d, left, top, right - left, bottom - top)
+            self.cachedRect = (top, left, right, bottom)
         painter.drawImage(
-            QtCore.QRectF(left/d, top/d, (right-left)/d, (bottom-top)/d),
+            QtCore.QRectF(left / d, top / d,
+                          (right - left) / d, (bottom - top) / d),
             self.image)
 
 
