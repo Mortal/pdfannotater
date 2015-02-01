@@ -1,5 +1,4 @@
 import popplerqt4
-import sys
 from PyQt4 import QtGui, QtCore, uic
 import math
 import os
