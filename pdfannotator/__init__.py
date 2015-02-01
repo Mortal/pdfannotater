@@ -29,7 +29,6 @@ class PdfPageItem(QtGui.QGraphicsItem):
         self.rect = QtCore.QRectF(0, 0, tmp.width(), tmp.height())
         self.setFlag(QtGui.QGraphicsItem.ItemUsesExtendedStyleOption, True)
 
-
     def boundingRect(self):
         return self.rect
 
@@ -49,6 +48,7 @@ class PdfPageItem(QtGui.QGraphicsItem):
         painter.drawImage(
             QtCore.QRectF(left/d, top/d, (right-left)/d, (bottom-top)/d),
             self.image)
+
 
 class PropertiesModel(QtCore.QAbstractTableModel):
     def __init__(self, item):
