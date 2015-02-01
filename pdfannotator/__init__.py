@@ -94,7 +94,7 @@ class ItemBase(QtGui.QGraphicsItem):
 
     def changeRect(self, r):
         self.prepareGeometryChange()
-        self.innerRect = rect
+        self.innerRect = r
 
     def paint(self, painter, option, widget):
         if self.isHovering or self.isSelected():
@@ -299,7 +299,7 @@ class TextItem(QtGui.QGraphicsTextItem):
         c.beginEditBlock()
         c.select(QtGui.QTextCursor.Document)
         c.insertHtml("Boo")
-        setTextCursor(c)
+        self.setTextCursor(c)
 
     def focusOutEvent(self, event):
         self.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
@@ -388,6 +388,8 @@ class Page(QtCore.QObject):
         self.selectedItem = None
 
     def addText(self):
+        global a
+
         text = TextItem(self, self.myFont)
         font_metrics = QtGui.QFontMetrics(text.font())
         pos = a.view.mapToScene(a.view.mapFromGlobal(QtGui.QCursor.pos()))
@@ -708,7 +710,7 @@ class MainWindow(QtGui.QMainWindow):
         font.setUnderline(self.actionUnderline.isChecked())
         self.project.changeFont(font)
 
-    def itemSelected(item):
+    def itemSelected(self, item):
         font = item.font()
         color = item.defaultTextColor()
         self.fontCombo.setCurrentFont(font)
