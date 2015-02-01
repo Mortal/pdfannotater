@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PyQt4 import QtGui, QtCore, uic
+from PyQt4 import QtGui
 from pdfannotator import MainWindow
 
 
