@@ -115,11 +115,14 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="propertiesDocWidget">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="windowTitle">
     <string>Properties</string>
    </property>
+   <attribute name="visible">
+    <bool>false</bool>
+   </attribute>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
@@ -228,7 +231,10 @@
     <string>Pages</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>8</number>
+   </attribute>
+   <attribute name="height">
+    <number>100</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_6">
     <layout class="QVBoxLayout" name="verticalLayout_3">
