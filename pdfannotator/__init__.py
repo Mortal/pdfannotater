@@ -387,12 +387,10 @@ class Page(QtCore.QObject):
         self.project = project
         self.selectedItem = None
 
-    def addText(self):
-        global a
-
+    def addText(self, application):
         text = TextItem(self, self.myFont)
         font_metrics = QtGui.QFontMetrics(text.font())
-        pos = a.view.mapToScene(a.view.mapFromGlobal(QtGui.QCursor.pos()))
+        pos = application.view.mapToScene(application.view.mapFromGlobal(QtGui.QCursor.pos()))
         text.setPos(
             pos.x(),
             pos.y() - font_metrics.ascent() - font_metrics.leading() - 1)
@@ -690,7 +688,7 @@ class MainWindow(QtGui.QMainWindow):
             pass
 
     def addText(self):
-        self.currentPage.addText()
+        self.currentPage.addText(self)
 
     def deleteSelection(self):
         self.currentPage.deleteSelection()
