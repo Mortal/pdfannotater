@@ -458,6 +458,8 @@ class Project(QtCore.QObject):
         self.pages = [Page(self, i) for i in range(self.document.numPages())]
 
     def create(self, path):
+        if not os.path.exists(path):
+            raise IOError('%s does not exist' % (path,))
         pdf = QtCore.QFile(path)
         pdf.open(QtCore.QIODevice.ReadOnly)
         pdfData = pdf.readAll()
