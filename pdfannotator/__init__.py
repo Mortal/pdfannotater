@@ -51,23 +51,6 @@ class PdfPageItem(QtGui.QGraphicsItem):
             self.image)
 
 
-class PropertiesModel(QtCore.QAbstractTableModel):
-    def __init__(self, item):
-        QtCore.QAbstractItemModel.__init__(self)
-        self.item = item
-
-    def columnCount(self, parent):
-        return 2
-
-    def rowCount(self, parent):
-        return len(self.item.properties)
-
-    def data(self, index, role):
-        if not index.isValid():
-            return None
-        return "HAT"
-
-
 class ItemBase(QtGui.QGraphicsItem):
     def __init__(self, page):
         QtGui.QGraphicsItem.__init__(self)
