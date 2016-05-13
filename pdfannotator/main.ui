@@ -231,7 +231,7 @@
     <string>Pages</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>8</number>
+    <number>1</number>
    </attribute>
    <attribute name="height">
     <number>100</number>
