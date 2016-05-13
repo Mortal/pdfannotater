@@ -92,7 +92,6 @@
     </widget>
     <addaction name="menuZoom"/>
     <addaction name="separator"/>
-    <addaction name="actionProperties"/>
     <addaction name="actionPages"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
@@ -113,119 +112,6 @@
    <addaction name="menuText"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidget" name="propertiesDocWidget">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="windowTitle">
-    <string>Properties</string>
-   </property>
-   <attribute name="visible">
-    <bool>false</bool>
-   </attribute>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_5">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_4">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="margin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QTableWidget" name="tableWidget">
-       <property name="autoScrollMargin">
-        <number>16</number>
-       </property>
-       <property name="showDropIndicator" stdset="0">
-        <bool>false</bool>
-       </property>
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::NoSelection</enum>
-       </property>
-       <property name="showGrid">
-        <bool>true</bool>
-       </property>
-       <property name="sortingEnabled">
-        <bool>false</bool>
-       </property>
-       <property name="cornerButtonEnabled">
-        <bool>false</bool>
-       </property>
-       <attribute name="horizontalHeaderHighlightSections">
-        <bool>false</bool>
-       </attribute>
-       <attribute name="horizontalHeaderStretchLastSection">
-        <bool>true</bool>
-       </attribute>
-       <attribute name="verticalHeaderVisible">
-        <bool>false</bool>
-       </attribute>
-       <attribute name="verticalHeaderCascadingSectionResizes">
-        <bool>false</bool>
-       </attribute>
-       <attribute name="verticalHeaderDefaultSectionSize">
-        <number>17</number>
-       </attribute>
-       <attribute name="verticalHeaderHighlightSections">
-        <bool>false</bool>
-       </attribute>
-       <attribute name="verticalHeaderMinimumSectionSize">
-        <number>17</number>
-       </attribute>
-       <row>
-        <property name="text">
-         <string>a</string>
-        </property>
-       </row>
-       <row>
-        <property name="text">
-         <string>x</string>
-        </property>
-       </row>
-       <column>
-        <property name="text">
-         <string>Property</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Value</string>
-        </property>
-       </column>
-       <item row="0" column="0">
-        <property name="text">
-         <string>a</string>
-        </property>
-       </item>
-       <item row="0" column="1">
-        <property name="text">
-         <string>xb</string>
-        </property>
-       </item>
-       <item row="1" column="0">
-        <property name="text">
-         <string>x</string>
-        </property>
-       </item>
-       <item row="1" column="1">
-        <property name="text">
-         <string>f</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <widget class="QDockWidget" name="pagesDocWidget">
    <property name="windowTitle">
     <string>Pages</string>
@@ -497,17 +383,6 @@
   <action name="actionZoom">
    <property name="text">
     <string>Zoom</string>
-   </property>
-  </action>
-  <action name="actionProperties">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Properties</string>
    </property>
   </action>
   <action name="actionPages">
@@ -786,38 +661,6 @@
     <hint type="sourcelabel">
      <x>127</x>
      <y>463</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionProperties</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>propertiesDocWidget</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>127</x>
-     <y>195</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>propertiesDocWidget</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionProperties</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>127</x>
-     <y>195</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
