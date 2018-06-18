@@ -43,12 +43,13 @@ class PdfPageItem(QtWidgets.QGraphicsItem):
 
         if (top, left, right, bottom) != self.cachedRect:
             self.image = self.page.renderToImage(
-                75 * d, 75 * d, left, top, right - left, bottom - top)
+                75 * d, 75 * d, left, top, right - left, bottom - top
+            )
             self.cachedRect = (top, left, right, bottom)
         painter.drawImage(
-            QtCore.QRectF(left / d, top / d,
-                          (right - left) / d, (bottom - top) / d),
-            self.image)
+            QtCore.QRectF(left / d, top / d, (right - left) / d, (bottom - top) / d),
+            self.image,
+        )
 
 
 class ItemBase(QtWidgets.QGraphicsItem):
@@ -65,14 +66,14 @@ class ItemBase(QtWidgets.QGraphicsItem):
         self.moveStart = None
         self.setFlag(self.ItemIsMovable, True)
         self.setFlag(self.ItemIsSelectable, True)
-        self.properties = ['width', 'height', 'top', 'left']
+        self.properties = ["width", "height", "top", "left"]
 
     def boundingRect(self):
         r = QtCore.QRectF(self.innerRect)
-        r.setLeft(r.left()-2)
-        r.setTop(r.top()-2)
-        r.setRight(r.right()+2)
-        r.setBottom(r.bottom()+2)
+        r.setLeft(r.left() - 2)
+        r.setTop(r.top() - 2)
+        r.setRight(r.right() + 2)
+        r.setBottom(r.bottom() + 2)
         return r
 
     def changeRect(self, r):
@@ -90,10 +91,10 @@ class ItemBase(QtWidgets.QGraphicsItem):
             painter.setPen(pen)
             painter.setBrush(QtCore.Qt.NoBrush)
             r = QtCore.QRectF(self.innerRect)
-            r.setLeft(r.left()-1)
-            r.setTop(r.top()-1)
-            r.setRight(r.right()+1)
-            r.setBottom(r.bottom()+1)
+            r.setLeft(r.left() - 1)
+            r.setTop(r.top() - 1)
+            r.setRight(r.right() + 1)
+            r.setBottom(r.bottom() + 1)
             painter.drawRect(self.boundingRect())
 
     def onLeft(self, pos):
@@ -123,8 +124,12 @@ class ItemBase(QtWidgets.QGraphicsItem):
                 self.resizeLeft = self.onLeft(p)
                 self.resizeRight = self.onRight(p)
 
-            if (not self.resizeTop and not self.resizeBottom
-                    and not self.resizeLeft and not self.resizeRight):
+            if (
+                not self.resizeTop
+                and not self.resizeBottom
+                and not self.resizeLeft
+                and not self.resizeRight
+            ):
                 if event.modifiers() == QtCore.Qt.ControlModifier:
                     self.moveStart = (self.innerRect.topLeft(), p)
                     self.myEvent = True
@@ -151,7 +156,8 @@ class ItemBase(QtWidgets.QGraphicsItem):
             if self.moveStart:
                 self.innerRect.moveTo(
                     self.moveStart[0].x() + p.x() - self.moveStart[1].x(),
-                    self.moveStart[0].y() + p.y() - self.moveStart[1].y())
+                    self.moveStart[0].y() + p.y() - self.moveStart[1].y(),
+                )
                 self.commandName = "Move item"
         else:
             super().mouseMoveEvent(event)
@@ -160,8 +166,11 @@ class ItemBase(QtWidgets.QGraphicsItem):
         if self.myEvent:
             if self.innerRect != self.startRect:
                 GeometryCommand(
-                    self, self.startRect,
-                    QtCore.QRectF(self.innerRect), self.commandName)
+                    self,
+                    self.startRect,
+                    QtCore.QRectF(self.innerRect),
+                    self.commandName,
+                )
         else:
             super().mouseReleaseEvent(event)
 
@@ -196,13 +205,16 @@ class ImageItem(ItemBase):
         ItemBase.__init__(self, page)
         self.image = QtGui.QImage("/home/jakobt/tux2.png")
         self.innerRect = QtCore.QRectF(
-            100, 100, self.image.width(), self.image.height())
+            100, 100, self.image.width(), self.image.height()
+        )
 
     def paint(self, painter, option, widget):
         painter.setRenderHint(QtGui.QPainter.SmoothPixmapTransform, True)
-        painter.drawImage(self.innerRect, self.image,
-                          QtCore.QRectF(
-                              0, 0, self.image.width(), self.image.height()))
+        painter.drawImage(
+            self.innerRect,
+            self.image,
+            QtCore.QRectF(0, 0, self.image.width(), self.image.height()),
+        )
         ItemBase.paint(self, painter, option, widget)
 
     def getName(self):
@@ -372,10 +384,12 @@ class Page(QtCore.QObject):
     def addText(self, application):
         text = TextItem(self, self.myFont)
         font_metrics = QtGui.QFontMetrics(text.font())
-        pos = application.view.mapToScene(application.view.mapFromGlobal(QtGui.QCursor.pos()))
+        pos = application.view.mapToScene(
+            application.view.mapFromGlobal(QtGui.QCursor.pos())
+        )
         text.setPos(
-            pos.x(),
-            pos.y() - font_metrics.ascent() - font_metrics.leading() - 1)
+            pos.x(), pos.y() - font_metrics.ascent() - font_metrics.leading() - 1
+        )
         self.scene.addItem(text)
         self.objects.append(text)
         text.setSelected(True)
@@ -433,20 +447,18 @@ class Project(QtCore.QObject):
         self.undoStack.clear()
         self.pdfData = pdfData
         self.document = popplerqt5.Poppler.Document.loadFromData(pdfData)
-        self.document.setRenderHint(
-            popplerqt5.Poppler.Document.Antialiasing, True)
-        self.document.setRenderHint(
-            popplerqt5.Poppler.Document.TextAntialiasing, True)
+        self.document.setRenderHint(popplerqt5.Poppler.Document.Antialiasing, True)
+        self.document.setRenderHint(popplerqt5.Poppler.Document.TextAntialiasing, True)
         self.pages = [Page(self, i) for i in range(self.document.numPages())]
 
     def create(self, path):
         if not os.path.exists(path):
-            raise IOError('%s does not exist' % (path,))
+            raise IOError("%s does not exist" % (path,))
         pdf = QtCore.QFile(path)
         pdf.open(QtCore.QIODevice.ReadOnly)
         pdfData = pdf.readAll()
         self.__loadPdf__(pdfData)
-        self.path = os.path.splitext(str(path))[0]+".pep"
+        self.path = os.path.splitext(str(path))[0] + ".pep"
 
     def save(self):
         f = QtCore.QFile(self.path)
@@ -477,7 +489,7 @@ class Project(QtCore.QObject):
         pdfData = stream.readBytes()
         self.__loadPdf__(pdfData)
         pages = stream.readUInt32()
-        for i in range(pages-len(self.pages)):
+        for i in range(pages - len(self.pages)):
             self.addPage()
         for page in self.pages:
             page.load(stream)
@@ -490,7 +502,7 @@ class Project(QtCore.QObject):
         printer = QtPrintSupport.QPrinter()
         printer.setColorMode(QtPrintSupport.QPrinter.Color)
         printer.setOutputFormat(QtPrintSupport.QPrinter.PdfFormat)
-        printer.setOutputFileName(path+"~1")
+        printer.setOutputFileName(path + "~1")
         printer.setPageMargins(0, 0, 0, 0, QtPrintSupport.QPrinter.Point)
         page = self.document.page(0)
         printer.setPaperSize(page.pageSizeF(), QtPrintSupport.QPrinter.Point)
@@ -508,23 +520,21 @@ class Project(QtCore.QObject):
             page.pageItem.hide()
             bg = page.scene.backgroundBrush()
             page.scene.setBackgroundBrush(QtGui.QBrush(QtCore.Qt.NoBrush))
-            page.scene.render(
-                painter, QtCore.QRectF(), page.pageItem.boundingRect())
+            page.scene.render(painter, QtCore.QRectF(), page.pageItem.boundingRect())
             page.scene.setBackgroundBrush(bg)
             page.pageItem.show()
         painter.end()
         del painter
         del printer
-        f = QtCore.QFile(path+"~2")
+        f = QtCore.QFile(path + "~2")
         f.open(QtCore.QIODevice.WriteOnly)
         f.write(self.pdfData)
         f.close()
         subprocess.call(
-            ["pdftk", path+"~1",
-             "multibackground", path+"~2",
-             "output", path])
-        os.remove(path+"~1")
-        os.remove(path+"~2")
+            ["pdftk", path + "~1", "multibackground", path + "~2", "output", path]
+        )
+        os.remove(path + "~1")
+        os.remove(path + "~2")
 
     def changeFont(self, font):
         self.font = font
@@ -544,7 +554,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if page:
             self.treeView.selectionModel().setCurrentIndex(
                 self.project.treeModel.createIndex(0, 0, page),
-                QtCore.QItemSelectionModel.ClearAndSelect)
+                QtCore.QItemSelectionModel.ClearAndSelect,
+            )
 
     def getCurrentPage(self):
         return self.currentPage
@@ -559,9 +570,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         QtCore.QObject.__init__(self)
         uic.loadUi(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                         "main.ui"),
-            self)
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "main.ui"), self
+        )
 
         self.fontCombo = QtWidgets.QFontComboBox()
         self.textToolBar.addWidget(self.fontCombo)
@@ -603,8 +613,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionSizeTool.setChecked(True)
 
         self.treeView.setModel(project.treeModel)
-        self.treeView.selectionModel().currentChanged.connect(
-            self.currentObjectChanged)
+        self.treeView.selectionModel().currentChanged.connect(self.currentObjectChanged)
 
         self.currentPageChanged.connect(self.view.currentPageChanged)
 
@@ -621,13 +630,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def newProject(self):
         path = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Open PDF file", "", "PDF document (*.pdf);;All files (*)")
+            self, "Open PDF file", "", "PDF document (*.pdf);;All files (*)"
+        )
         if path:
             self.doNewProject(path)
 
     def export(self):
         a, e = os.path.splitext(str(self.project.path))
-        path = a+"_ann.pdf"
+        path = a + "_ann.pdf"
         # path = QtWidgets.QFileDialog.getSaveFileName(
         #     self, "Export pdf", "", "Pdf Documents (*.pdf);;All files (*)")
         if path:
@@ -635,9 +645,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def saveas(self):
         path = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Save Project",
+            self,
+            "Save Project",
             self.project.path if self.project.path else "",
-            "Pro Documents (*.pro);;All files (*)")
+            "Pro Documents (*.pro);;All files (*)",
+        )
         if path:
             self.project.saveas(path)
 
@@ -649,9 +661,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def load(self):
         path = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Open Project",
+            self,
+            "Open Project",
             self.project.path if self.project.path else "",
-            "Pro Documents (*.pro);;All files (*)")
+            "Pro Documents (*.pro);;All files (*)",
+        )
         if path:
             self.doLoad(path)
 
@@ -663,9 +677,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def addImage(self):
         path = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Add image", "",
+            self,
+            "Add image",
+            "",
             "Image Formats (*.bmp *.jgp *.jpeg *.mng *.png *.pbm *.ppm "
-            "*.tiff);;All files(*)")
+            "*.tiff);;All files(*)",
+        )
         if path:
             pass
 
@@ -683,9 +700,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def handleFontChange(self, *_):
         font = self.fontCombo.currentFont()
         font.setPointSize(int(self.fontSizeCombo.currentText()))
-        font.setWeight(QtGui.QFont.Bold
-                       if self.actionBold.isChecked()
-                       else QtGui.QFont.Normal)
+        font.setWeight(
+            QtGui.QFont.Bold if self.actionBold.isChecked() else QtGui.QFont.Normal
+        )
         font.setItalic(self.actionItalic.isChecked())
         font.setUnderline(self.actionUnderline.isChecked())
         self.project.changeFont(font)

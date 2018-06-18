@@ -1,5 +1,6 @@
 from PyQt5 import QtGui, QtWidgets, QtCore
 
+
 class PageView(QtWidgets.QGraphicsView):
     zoomChanged = QtCore.pyqtSignal()
     pageChanged = QtCore.pyqtSignal()
@@ -19,11 +20,11 @@ class PageView(QtWidgets.QGraphicsView):
         self.updateTransform()
 
     def zoomIn(self):
-        self.zoom *= 1.5;
+        self.zoom *= 1.5
         self.updateTransform()
 
     def zoomOut(self):
-        self.zoom /= 1.5;
+        self.zoom /= 1.5
         self.updateTransform()
 
     def wheelEvent(self, event):
