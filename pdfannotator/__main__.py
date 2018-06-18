@@ -1,13 +1,13 @@
 import os
 import sys
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 from pdfannotator import MainWindow
 
 
 def main():
     global a
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
 
     a = MainWindow()
     a.show()
