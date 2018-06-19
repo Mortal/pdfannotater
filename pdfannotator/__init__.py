@@ -78,13 +78,12 @@ class Page(QtCore.QObject):
         self.scene.addItem(self.pageItem)
 
         self.project = project
-        self.selectedItem = None
 
     def addText(self, application):
         text = TextItem(self, self.myFont)
         font_metrics = QtGui.QFontMetrics(text.font())
-        pos = application.view.mapToScene(
-            application.view.mapFromGlobal(QtGui.QCursor.pos())
+        pos = application.pageView.mapToScene(
+            application.pageView.mapFromGlobal(QtGui.QCursor.pos())
         )
         text.setPos(
             pos.x(), pos.y() - font_metrics.ascent() - font_metrics.leading() - 1
@@ -142,7 +141,7 @@ class Project(QtCore.QObject):
         self.treeModel = ObjectTreeModel(self)
         self.path = None
 
-    def __loadPdf__(self, pdfData):
+    def load_pdf(self, pdfData):
         self.undoStack.clear()
         self.pdfData = pdfData
         self.document = popplerqt5.Poppler.Document.loadFromData(pdfData)
@@ -156,7 +155,7 @@ class Project(QtCore.QObject):
         pdf = QtCore.QFile(path)
         pdf.open(QtCore.QIODevice.ReadOnly)
         pdfData = pdf.readAll()
-        self.__loadPdf__(pdfData)
+        self.load_pdf(pdfData)
         self.path = os.path.splitext(str(path))[0] + ".pep"
 
     def save(self):
@@ -186,7 +185,7 @@ class Project(QtCore.QObject):
             return None
         self.path = stream.readQString()
         pdfData = stream.readBytes()
-        self.__loadPdf__(pdfData)
+        self.load_pdf(pdfData)
         pages = stream.readUInt32()
         for i in range(pages - len(self.pages)):
             self.addPage()
@@ -255,9 +254,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.project.treeModel.createIndex(0, 0, page),
                 QtCore.QItemSelectionModel.ClearAndSelect,
             )
-
-    def getCurrentPage(self):
-        return self.currentPage
 
     def currentObjectChanged(self, current, previous):
         p = current.internalPointer()

@@ -31,7 +31,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="PageView" name="view"/>
+     <widget class="PageView" name="pageView"/>
     </item>
     <item>
      <widget class="QFontComboBox" name="fontCombo"/>
@@ -103,7 +103,7 @@
      <x>0</x>
      <y>0</y>
      <width>1142</width>
-     <height>24</height>
+     <height>14</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFoobar">
@@ -691,7 +691,8 @@
    <slots>
     <signal>zoomChanged()</signal>
     <signal>pageChanged()</signal>
-    <slot>currentPageChanged(Page*)</slot>
+    <signal>selectedChanged()</signal>
+    <slot>currentPageChanged(QObject*)</slot>
     <slot>zoomReset()</slot>
     <slot>zoomIn()</slot>
     <slot>zoomOut()</slot>
@@ -751,7 +752,7 @@
   <connection>
    <sender>actionZoomIn</sender>
    <signal>triggered()</signal>
-   <receiver>view</receiver>
+   <receiver>pageView</receiver>
    <slot>zoomIn()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -767,7 +768,7 @@
   <connection>
    <sender>actionZoomOut</sender>
    <signal>triggered()</signal>
-   <receiver>view</receiver>
+   <receiver>pageView</receiver>
    <slot>zoomOut()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -783,7 +784,7 @@
   <connection>
    <sender>actionResetZoom</sender>
    <signal>triggered()</signal>
-   <receiver>view</receiver>
+   <receiver>pageView</receiver>
    <slot>zoomReset()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1102,9 +1103,9 @@
   </connection>
   <connection>
    <sender>mainWindow</sender>
-   <signal>currentPageChanged(Page*)</signal>
-   <receiver>view</receiver>
-   <slot>currentPageChanged(Page*)</slot>
+   <signal>currentPageChanged(QObject*)</signal>
+   <receiver>pageView</receiver>
+   <slot>currentPageChanged(QObject*)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>570</x>
@@ -1118,7 +1119,7 @@
   </connection>
  </connections>
  <slots>
-  <signal>currentPageChanged(Page*)</signal>
+  <signal>currentPageChanged(QObject*)</signal>
   <slot>save()</slot>
   <slot>load()</slot>
   <slot>saveas()</slot>

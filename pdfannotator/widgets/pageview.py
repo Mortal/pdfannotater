@@ -4,6 +4,7 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 class PageView(QtWidgets.QGraphicsView):
     zoomChanged = QtCore.pyqtSignal()
     pageChanged = QtCore.pyqtSignal()
+    currentPage = None
 
     def __init__(self, parent):
         super().__init__(parent)
