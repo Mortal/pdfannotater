@@ -1089,7 +1089,7 @@
    <sender>actionAddText</sender>
    <signal>triggered()</signal>
    <receiver>mainWindow</receiver>
-   <slot>addText()</slot>
+   <slot>addTextUnderCursor()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -1128,6 +1128,6 @@
   <slot>exportSaveAndQuit()</slot>
   <slot>handleFontChange()</slot>
   <slot>deleteSelection()</slot>
-  <slot>addText()</slot>
+  <slot>addTextUnderCursor()</slot>
  </slots>
 </ui>

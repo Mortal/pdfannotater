@@ -5,6 +5,7 @@ import subprocess
 from .widgets.textitem import TextItem
 from .widgets.pdfpageitem import PdfPageItem
 from .widgets.item import ItemBase, ImageItem, RectItem
+from .widgets.strikethrough import StrikethroughItem
 
 
 class ObjectTreeModel(QtCore.QAbstractItemModel):
@@ -74,28 +75,54 @@ class Page(QtCore.QObject):
 
         self.scene = QtWidgets.QGraphicsScene()
         self.scene.setBackgroundBrush(QtCore.Qt.gray)
-        self.pageItem = PdfPageItem(project.document.page(i))
+        self.pageItem = PdfPageItem(project.document.page(i), self)
         self.scene.addItem(self.pageItem)
 
         self.project = project
 
-    def addText(self, application):
-        text = TextItem(self, self.myFont)
-        font_metrics = QtGui.QFontMetrics(text.font())
+    def insertV(self, v_point):
+        v_text = self._addText(v_point, "topleft", focus=False)
+        v_text.setPlainText("v")
+        return v_text
+
+    def insertText(self, topleft):
+        return self._addText(topleft, "topleft", focus=True)
+
+    def insertStrikethrough(self, line_bbox):
+        item = StrikethroughItem(self, line_bbox)
+        self.scene.addItem(item)
+        self.objects.append(item)
+        return item
+
+    def addTextUnderCursor(self, application):
         pos = application.pageView.mapToScene(
             application.pageView.mapFromGlobal(QtGui.QCursor.pos())
         )
-        text.setPos(
-            pos.x(), pos.y() - font_metrics.ascent() - font_metrics.leading() - 1
-        )
+        anchor = "baseline"
+        self._addText(pos, "baseline", focus=True)
+
+    def _addText(self, pos, anchor, focus):
+        text = TextItem(self, self.myFont)
+        if anchor == "baseline":
+            font_metrics = QtGui.QFontMetrics(text.font())
+            topleft = QtCore.QPointF(
+                pos.x(), pos.y() - font_metrics.ascent() - font_metrics.leading() - 1
+            )
+        elif anchor == "topleft":
+            topleft = pos
+        else:
+            raise ValueError(anchor)
+        text.setPos(topleft)
         self.scene.addItem(text)
         self.objects.append(text)
-        text.setSelected(True)
-        text.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
-        selection = text.textCursor()
-        selection.select(QtGui.QTextCursor.Document)
-        text.setTextCursor(selection)
-        text.setFocus()
+        if focus:
+            text.setSelected(True)
+            text.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
+            selection = text.textCursor()
+            selection.select(QtGui.QTextCursor.Document)
+            text.setTextCursor(selection)
+            text.setFocus()
+        return text
 
     def save(self, stream):
         stream.writeUInt32(len(self.objects))
@@ -107,7 +134,7 @@ class Page(QtCore.QObject):
         count = stream.readUInt32()
         for i in range(count):
             d = stream.readUInt32()
-            for t in [ImageItem, RectItem, TextItem]:
+            for t in [ImageItem, RectItem, TextItem, StrikethroughItem]:
                 if t.id() != d:
                     continue
                 item = t(self)
@@ -358,8 +385,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if path:
             pass
 
-    def addText(self):
-        self.currentPage.addText(self)
+    def addTextUnderCursor(self):
+        self.currentPage.addTextUnderCursor(self)
 
     def deleteSelection(self):
         self.currentPage.deleteSelection()
