@@ -9,6 +9,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         # self.setAcceptHoverEvents(True)
         self.setFlag(self.ItemIsMovable, True)
         self.setFlag(self.ItemIsSelectable, True)
+        self.setFlag(self.ItemIsFocusable, True)
         self.setDefaultTextColor(QtCore.Qt.red)
         document = QtGui.QTextDocument()
         document.setDocumentMargin(0)

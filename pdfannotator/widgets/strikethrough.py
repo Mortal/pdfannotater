@@ -8,6 +8,7 @@ class StrikethroughItem(QtWidgets.QGraphicsLineItem):
         self.page = page
         self.setFlag(self.ItemIsMovable, True)
         self.setFlag(self.ItemIsSelectable, True)
+        self.setFlag(self.ItemIsFocusable, True)
         self.setPen(QtGui.QPen(QtGui.QBrush(QtCore.Qt.red), 1))
 
     def boundingRect(self):
@@ -22,7 +23,13 @@ class StrikethroughItem(QtWidgets.QGraphicsLineItem):
         return painter_path
 
     def save(self, stream, version):
-        stream << self.line_bbox
+        moved_bbox = QtCore.QRectF(
+            self.line_bbox.x() + self.x(),
+            self.line_bbox.y() + self.y(),
+            self.line_bbox.width(),
+            self.line_bbox.height(),
+        )
+        stream << moved_bbox
 
     def load(self, stream, version):
         line_bbox = QtCore.QRectF()

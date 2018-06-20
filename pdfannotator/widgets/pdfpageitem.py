@@ -1,3 +1,4 @@
+import re
 import math
 import collections
 from PyQt5 import QtCore, QtWidgets, QtGui
@@ -13,15 +14,15 @@ class PdfPageItem(QtWidgets.QGraphicsItem):
 
     selection_brush = QtGui.QColor("#4a90d9")
 
-    def __init__(self, page, event_handler):
-        assert page is not None
+    def __init__(self, poppler_page, event_handler):
+        assert poppler_page is not None
         super().__init__()
         self.setFlag(self.ItemIsFocusable, True)
         self._event_handler = event_handler
         self.image = None
         self.cachedRect = None
-        self.page = page
-        tmp = self.page.renderToImage(72, 72)
+        self.poppler_page = poppler_page
+        tmp = self.poppler_page.renderToImage(72, 72)
         self.rect = QtCore.QRectF(0, 0, tmp.width(), tmp.height())
         self.setFlag(self.ItemUsesExtendedStyleOption, True)
         # for bbox, line in self.lines():
@@ -92,7 +93,7 @@ class PdfPageItem(QtWidgets.QGraphicsItem):
     def lines(self):
         if self._lines is not None:
             return self._lines
-        self._lines = partition_into_lines(self.page.textList())
+        self._lines = partition_into_lines(self.poppler_page.textList())
         return self._lines
 
     def boundingRect(self):
@@ -108,7 +109,7 @@ class PdfPageItem(QtWidgets.QGraphicsItem):
         right = math.ceil(r.right() * d)
 
         if (top, left, right, bottom) != self.cachedRect:
-            self.image = self.page.renderToImage(
+            self.image = self.poppler_page.renderToImage(
                 72 * d, 72 * d, left, top, right - left, bottom - top
             )
             self.cachedRect = (top, left, right, bottom)
@@ -156,6 +157,7 @@ class PdfPageItem(QtWidgets.QGraphicsItem):
         self._selected = word_range
         self._selected_rects = None
         self.update()
+        self._event_handler.text_selection_changed(bool(self._selected))
         # self.selectedChanged.emit()
 
     def get_selected_word(self):
@@ -182,6 +184,10 @@ class PdfPageItem(QtWidgets.QGraphicsItem):
                 bboxes = [word.bbox for word in words]
                 self._selected_rects.append(smallest_enclosing_rectf(bboxes))
         return self._selected_rects
+
+    def focusOutEvent(self, event):
+        super().focusOutEvent(event)
+        self._set_selected(None)
 
 
 def smallest_enclosing_rectf(bboxes):
@@ -221,8 +227,17 @@ def partition_into_lines(textbox):
                 )
                 line.append(Word(space_bbox, ""))
             last_end = bbox.right()
-            line.append(Word(bbox, word.text()))
-            bboxes.append(bbox)
+            text = word.text()
+            bounds = split_word(text)
+            if len(bounds) == 1:
+                line.append(Word(bbox, text))
+                bboxes.append(bbox)
+            else:
+                char_bbox = [word.charBoundingBox(i) for i in range(len(text))]
+                for i, j in bounds:
+                    sub_bbox = smallest_enclosing_rectf(char_bbox[i:j])
+                    line.append(Word(sub_bbox, text[i:j]))
+                    bboxes.append(sub_bbox)
             word = word.nextWord()
             if not word or in_degree[word] != 1:
                 break
@@ -230,3 +245,14 @@ def partition_into_lines(textbox):
         lines.append(Line(bbox, line))
     lines.sort(key=lambda line: line[0].top())
     return lines
+
+
+def split_word(word):
+    # Note, punct must start with ] due to how regex parses character classes,
+    # and \' causes both \ and ' to match,
+    # but \ and ' must be adjacent due to how Python parses strings.
+    punct = re.escape("][!\"#$%^'()*+,-./:;<=>?@^_`{|}~")
+    # Merge digit sequences and sequences of non-digit/punct,
+    # but don't merge punct sequences.
+    pattern = r"[0-9]+|[%s]|[^%s0-9]+" % (punct, punct)
+    return [(mo.start(), mo.end()) for mo in re.finditer(pattern, word)]

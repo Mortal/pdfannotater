@@ -80,6 +80,10 @@ class Page(QtCore.QObject):
 
         self.project = project
 
+    def text_selection_changed(self, nonempty):
+        if nonempty:
+            self.scene.clearSelection()
+
     def insertV(self, v_point):
         v_text = self._addText(v_point, "topleft", focus=False)
         v_text.setPlainText("v")
