@@ -124,13 +124,13 @@ class Page(QtCore.QObject):
             text.setFocus()
         return text
 
-    def save(self, stream):
+    def save(self, stream, version):
         stream.writeUInt32(len(self.objects))
         for obj in self.objects:
             stream.writeUInt32(obj.id())
-            obj.save(stream)
+            obj.save(stream, version)
 
-    def load(self, stream):
+    def load(self, stream, version):
         count = stream.readUInt32()
         for i in range(count):
             d = stream.readUInt32()
@@ -138,7 +138,7 @@ class Page(QtCore.QObject):
                 if t.id() != d:
                     continue
                 item = t(self)
-                item.load(stream)
+                item.load(stream, version)
                 self.scene.addItem(item)
                 self.objects.append(item)
 
@@ -190,12 +190,13 @@ class Project(QtCore.QObject):
         f.open(QtCore.QIODevice.WriteOnly)
         stream = QtCore.QDataStream(f)
         stream.writeUInt32(0x2a04c304)
-        stream.writeUInt32(0)
+        version = 0
+        stream.writeUInt32(version)
         stream.writeQString(self.path)
         stream.writeBytes(self.pdfData)
         stream.writeUInt32(len(self.pages))
         for page in self.pages:
-            page.save(stream)
+            page.save(stream, version)
 
     def saveas(self, path):
         self.path = str(path)
@@ -217,7 +218,7 @@ class Project(QtCore.QObject):
         for i in range(pages - len(self.pages)):
             self.addPage()
         for page in self.pages:
-            page.load(stream)
+            page.load(stream, version)
         self.changeFont(self.font)
 
     def addPage():

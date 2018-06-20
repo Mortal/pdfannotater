@@ -21,12 +21,12 @@ class StrikethroughItem(QtWidgets.QGraphicsLineItem):
         painter_path.addRect(self.line_bbox)
         return painter_path
 
-    def save(self, s):
-        s << self.line_bbox
+    def save(self, stream, version):
+        stream << self.line_bbox
 
-    def load(self, s):
+    def load(self, stream, version):
         line_bbox = QtCore.QRectF()
-        s >> line_bbox
+        stream >> line_bbox
         self.set_line_bbox(line_bbox)
 
     def set_line_bbox(self, line_bbox):

@@ -183,7 +183,7 @@ class ImageItem(ItemBase):
     def getName(self):
         return "Image"
 
-    def save(self, s):
+    def save(self, s, version):
         s << self.image
         s << self.innerRect
 

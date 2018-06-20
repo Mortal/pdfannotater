@@ -18,11 +18,11 @@ class TextItem(QtWidgets.QGraphicsTextItem):
             self.setFont(font)
         # self.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
 
-    def save(self, s):
+    def save(self, s, version):
         s.writeQString(self.toHtml())
         s << self.pos()
 
-    def load(self, s):
+    def load(self, s, version):
         html = s.readQString()
         pos = QtCore.QPointF()
         s >> pos
