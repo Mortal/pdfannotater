@@ -249,9 +249,9 @@ def partition_into_lines(textbox):
 
 def split_word(word):
     # Note, punct must start with ] due to how regex parses character classes,
-    # and \' causes both \ and ' to match,
-    # but \ and ' must be adjacent due to how Python parses strings.
-    punct = re.escape("][!\"#$%^'()*+,-./:;<=>?@^_`{|}~")
+    # and \" causes both \ and " to match,
+    # but \ and " must be adjacent due to how Python parses strings.
+    punct = re.escape(r"][!\"#$%^'()*+,-./:;<=>?@^_`{|}~")
     # Merge digit sequences and sequences of non-digit/punct,
     # but don't merge punct sequences.
     pattern = r"[0-9]+|[%s]|[^%s0-9]+" % (punct, punct)
